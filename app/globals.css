@@ -1,0 +1,357 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   ALBANOTTE — Global Design System
+   ============================================ */
+
+:root {
+  /* Core palette */
+  --alb-black: #0B0B0B;
+  --alb-charcoal: #141412;
+  --alb-warm-dark: #13130F;
+  --alb-surface: #161614;
+  --alb-off-white: #F2F0EA;
+  --alb-off-white-dim: rgba(242, 240, 234, 0.65);
+  --alb-stone: #F4F2ED;
+  --alb-olive: #5C6B4F;
+  --alb-olive-glow: rgba(92, 107, 79, 0.4);
+  --alb-muted-red: #8B3A3A;
+  --alb-muted: #999590;
+
+  /* Dynamic accent — overridden per blend on product pages */
+  --accent: #5C6B4F;
+
+  /* Layout */
+  --header-height: 64px;
+  --container-max: 1280px;
+  --container-pad: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --header-height: 72px;
+    --container-pad: 2rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --container-pad: 3rem;
+  }
+}
+
+/* ============================================
+   BASE RESETS
+   ============================================ */
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    background-color: var(--alb-black);
+    color: var(--alb-off-white);
+    scroll-behavior: auto; /* Lenis handles smooth scroll */
+  }
+
+  /* Lenis overrides */
+  html.lenis, html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  body {
+    font-family: var(--font-dm-sans), 'DM Sans', -apple-system, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-oswald), 'Oswald', Impact, 'Arial Narrow', sans-serif;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img, video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  ::selection {
+    background: var(--alb-olive);
+    color: var(--alb-off-white);
+  }
+}
+
+/* ============================================
+   GRAIN OVERLAY (Global)
+   Static noise texture — GPU optimized
+   ============================================ */
+
+.grain-overlay::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url('/grain.png');
+  background-repeat: repeat;
+  will-change: transform;
+}
+
+/* If no grain.png yet, use SVG noise as fallback */
+.grain-overlay--svg::after {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity: 0.035;
+}
+
+/* ============================================
+   NOISE TEXTURE (Section-level)
+   Subtle surface texture on dark sections
+   ============================================ */
+
+@layer utilities {
+  .noise-texture {
+    position: relative;
+  }
+
+  .noise-texture::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .grain-overlay::after {
+    animation: none;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================
+   UTILITY COMPONENTS
+   ============================================ */
+
+@layer components {
+  /* Container */
+  .alb-container {
+    width: 100%;
+    max-width: var(--container-max);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--container-pad);
+    padding-right: var(--container-pad);
+  }
+
+  /* Primary CTA button */
+  .alb-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    background: var(--alb-olive);
+    color: var(--alb-off-white);
+    font-family: var(--font-oswald), 'Oswald', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: none;
+    border-radius: 2px;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .alb-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(92, 107, 79, 0.3);
+  }
+
+  .alb-btn-primary:active {
+    transform: translateY(0);
+  }
+
+  /* Secondary CTA button */
+  .alb-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    background: transparent;
+    color: var(--alb-off-white);
+    font-family: var(--font-oswald), 'Oswald', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: 1px solid rgba(242, 240, 234, 0.25);
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .alb-btn-secondary:hover {
+    border-color: var(--alb-off-white);
+    transform: translateY(-2px);
+  }
+
+  /* Sticker base */
+  .alb-sticker {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    background: var(--alb-warm-dark);
+    border: 1px solid rgba(242, 240, 234, 0.12);
+    border-radius: 2px;
+    font-family: var(--font-oswald), 'Oswald', sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--alb-off-white);
+    box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.3);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    user-select: none;
+  }
+
+  .alb-sticker:hover {
+    transform: translateY(-3px) rotate(0deg);
+    box-shadow: 4px 6px 0 rgba(0, 0, 0, 0.4);
+  }
+
+  /* Olive dot indicator */
+  .alb-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--alb-olive);
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  /* Accent bar */
+  .alb-accent-bar {
+    width: 40px;
+    height: 3px;
+    background: var(--alb-olive);
+    border-radius: 2px;
+  }
+
+  /* Visually hidden (accessible) */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--alb-black);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--alb-muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--alb-olive);
+}
+
+/* ============================================
+   PRODUCT DESCRIPTION — HTML from Shopify
+   ============================================ */
+
+.product-description p {
+  margin-bottom: 0.75rem;
+}
+
+.product-description p:last-child {
+  margin-bottom: 0;
+}
+
+.product-description br {
+  display: block;
+  content: '';
+  margin-top: 0.5rem;
+}
+
+.product-description ul,
+.product-description ol {
+  margin-bottom: 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.product-description li {
+  margin-bottom: 0.25rem;
+}
+
+.product-description strong,
+.product-description b {
+  color: var(--alb-off-white);
+  font-weight: 500;
+}
